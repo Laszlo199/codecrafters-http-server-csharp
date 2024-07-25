@@ -9,11 +9,10 @@ Console.WriteLine("Logs from your program will appear here!");
 TcpListener server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 var socket = server.AcceptSocket();
+
 var send200 = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n\r\n");
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
-//ToDo Read the data
-//Parse the HTTP request to extract
-//Send a 200 OK response for the path / and a 404 Not Found response for any other path.
+
 byte[] data = new byte[1000];
 int receivedData = socket.Receive(data);
 string stringData = Encoding.UTF8.GetString(data, 0, receivedData);
