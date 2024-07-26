@@ -29,7 +29,7 @@ var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length
 var send200 = Encoding.UTF8.GetBytes(respons200);
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 
-if(uri.Length > 0)
+if( uri.Contains("/echo/" ) || uri.Length == 1)
 {
     socket.Send(send200);
 }
