@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,8 +11,8 @@ TcpListener server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 var socket = server.AcceptSocket();
 
-var send200 = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n\r\n");
-var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
+
+
 
 byte[] data = new byte[1000];
 int receivedData = socket.Receive(data);
@@ -20,8 +21,19 @@ string[] requestLines = stringData.Split(new[] { "\r\n" }, StringSplitOptions.No
 string requestLine = requestLines[0];
 string[] requestLineTokens = requestLine.Split(' ');
 string uri = requestLineTokens[1];
+var message = "";
 
-if(uri == "/")
+if (requestLineTokens[1].Contains("/echo/"));
+{
+    message = requestLineTokens[1].Remove(6);
+}
+
+var lenght = message.Length.ToString();
+var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{message}";
+var send200 = Encoding.UTF8.GetBytes(respons200);
+var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
+
+if(uri =="/")
 {
     socket.Send(send200);
 }
