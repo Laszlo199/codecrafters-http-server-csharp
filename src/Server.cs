@@ -1,3 +1,4 @@
+using System.Formats.Asn1;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -7,15 +8,23 @@ using System.Text;
 Console.WriteLine("Logs from your program will appear here!");
 
 // Uncomment this block to pass the first stage
+
 TcpListener server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 
+
 while(true){
-var socket = server.AcceptSocket();
-await Task.Run(()=> socket);
+
+TcpClient client = server.AcceptTcpClient();
+await Task.Run(()=> HandleRequest(client));
+}
+
+void HandleRequest(TcpClient client){
 //Reader
+var socket = server.AcceptSocket();
+NetworkStream stream = client.GetStream();
 byte[] data = new byte[1024];
-int receivedData = socket.Receive(data);
+int receivedData = stream.Read(data);
 string stringData = Encoding.UTF8.GetString(data, 0, receivedData);
 Console.WriteLine("Received data:\n" + stringData);
 
@@ -56,6 +65,4 @@ else if(uri.Contains("/echo/"))
 {
     socket.Send(send404);
 }
-
-socket.Close();
 }
