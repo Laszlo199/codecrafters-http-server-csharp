@@ -12,7 +12,7 @@ server.Start();
 
 while(true){
 var socket = server.AcceptSocket();
-
+await Task.Run(()=> socket);
 //Reader
 byte[] data = new byte[1024];
 int receivedData = socket.Receive(data);
@@ -57,9 +57,5 @@ else if(uri.Contains("/echo/"))
     socket.Send(send404);
 }
 
-if (allTokens[0][0] != "GET")
-{
-//response headers to broswer                
-}
 socket.Close();
 }
