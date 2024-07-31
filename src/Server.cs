@@ -2,11 +2,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 Console.WriteLine("Logs from your program will appear here!");
 
-// Uncomment this block to pass the first stage
+// Parse the --directory flag
 string directory = args.Length > 1 && args[0] == "--directory" ? args[1] : ".";
 
 TcpListener server = new TcpListener(IPAddress.Any, 4221);
@@ -63,6 +64,24 @@ async Task HandleRequestAsync(TcpClient client, string directory)
             var response = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {length}\r\n\r\n{userAgent}";
             var send200UserAgent = Encoding.UTF8.GetBytes(response);
             await stream.WriteAsync(send200UserAgent, 0, send200UserAgent.Length);
+        }
+        else if (uri.StartsWith("/files/"))
+        {
+            var filename = uri.Replace("/files/", string.Empty);
+            var filePath = Path.Combine(directory, filename);
+
+            if (File.Exists(filePath))
+            {
+                var fileContents = await File.ReadAllBytesAsync(filePath);
+                var response200 = $"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {fileContents.Length}\r\n\r\n";
+                var responseHeader = Encoding.UTF8.GetBytes(response200);
+                await stream.WriteAsync(responseHeader, 0, responseHeader.Length);
+                await stream.WriteAsync(fileContents, 0, fileContents.Length);
+            }
+            else
+            {
+                await stream.WriteAsync(send404, 0, send404.Length);
+            }
         }
         else
         {
