@@ -56,5 +56,5 @@ else if(uri.Contains("/echo/"))
 {
     socket.Send(send404);
 }
-
+socket.Close();
 }
