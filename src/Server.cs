@@ -19,11 +19,11 @@ TcpClient client = server.AcceptTcpClient();
 await Task.Run(()=> HandleRequest(client));
 }
 
-void HandleRequest(TcpClient client){
+async Task HandleRequest(TcpClient client){
 //Reader
 NetworkStream stream = client.GetStream();
 byte[] data = new byte[1024];
-int receivedData = stream.Read(data);
+int receivedData = await stream.ReadAsync(data, 0, data.Length);
 string stringData = Encoding.UTF8.GetString(data, 0, receivedData);
 Console.WriteLine("Received data:\n" + stringData);
 
@@ -43,7 +43,7 @@ var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 if(uri == "/")
 {
     var send200 = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n\r\n");
-    stream.Write(send200);
+    await stream.WriteAsync(send200);
 }
 else if(uri.Contains("/echo/"))
 {
@@ -51,7 +51,7 @@ else if(uri.Contains("/echo/"))
     var messageLenght = message.Length;
     var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {messageLenght}\r\n\r\n{message}";
     var send200UserAgent = Encoding.UTF8.GetBytes(respons200);
-    stream.Write(send200UserAgent);
+    await stream.WriteAsync(send200UserAgent);
 
 }else if(uri.Contains("/user-agent"))
 {
@@ -59,9 +59,10 @@ else if(uri.Contains("/echo/"))
     int lenght = allTokens[2][1].Length;
     var respons = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}";
     var send200UserAgent = Encoding.UTF8.GetBytes(respons);
-    stream.Write(send200UserAgent);
+    await stream.WriteAsync(send200UserAgent);
 }else
 {
-   stream.Write(send404);
+   await stream.WriteAsync(send404);
 }
+client.Close();
 }
