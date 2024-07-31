@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 Console.WriteLine("Logs from your program will appear here!");
 
 // Uncomment this block to pass the first stage
+string directory = args.Length > 1 && args[0] == "--directory" ? args[1] : ".";
+
 TcpListener server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 Console.WriteLine("Server started, waiting for connections...");
@@ -14,10 +16,10 @@ Console.WriteLine("Server started, waiting for connections...");
 while (true)
 {
     TcpClient client = await server.AcceptTcpClientAsync();
-    _ = Task.Run(() => HandleRequestAsync(client));
+    _ = Task.Run(() => HandleRequestAsync(client, directory));
 }
 
-async Task HandleRequestAsync(TcpClient client)
+async Task HandleRequestAsync(TcpClient client, string directory)
 {
     try
     {
