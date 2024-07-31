@@ -56,5 +56,10 @@ else if(uri.Contains("/echo/"))
 {
     socket.Send(send404);
 }
+
+if (allTokens[0][0] != "GET")
+{
+//response headers to broswer                
+}
 socket.Close();
 }
