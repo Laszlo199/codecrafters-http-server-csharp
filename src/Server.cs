@@ -27,13 +27,14 @@ for(int i = 0; i < requestLines.Length; i++)
 
 //select the data
 string userAgent = allTokens[3][1];
+string version = "/"+allTokens[0][2];
 var uri = allTokens[0][1];
 
 //create the messages and check the uri
 //var message = string.Empty;
 int lenght = userAgent.Length; 
 
-var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}";
+var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}/1.2.3";
 var send200 = Encoding.UTF8.GetBytes(respons200);
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 
