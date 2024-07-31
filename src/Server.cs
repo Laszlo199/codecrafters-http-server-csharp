@@ -29,8 +29,6 @@ for(int i = 0; i < requestLines.Length; i++)
 string userAgent = allTokens[3][1];
 var uri = allTokens[0][1];
 
-//create the messages and check the uri
-int lenght = uri.Length;
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 
 if(uri == "/")
@@ -48,7 +46,8 @@ else if(uri.Contains("/echo/"))
 
 }else if(uri.Contains("/user-agent"))
 {
-    var respons = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}";
+    int lenght = allTokens[3][1].Length;
+    var respons = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}/1.1";
     var send200UserAgent = Encoding.UTF8.GetBytes(respons);
     socket.Send(send200UserAgent);
 }else
