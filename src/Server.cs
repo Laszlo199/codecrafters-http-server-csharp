@@ -26,7 +26,7 @@ for(int i = 0; i < requestLines.Length; i++)
 }
 
 //select the data
-string userAgent = allTokens[3][1];
+
 var uri = allTokens[0][1];
 
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
@@ -46,8 +46,9 @@ else if(uri.Contains("/echo/"))
 
 }else if(uri.Contains("/user-agent"))
 {
-    int lenght = allTokens[3][1].Length;
-    var respons = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}/1.1";
+    string userAgent = allTokens[2][1];
+    int lenght = allTokens[2][1].Length;
+    var respons = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}";
     var send200UserAgent = Encoding.UTF8.GetBytes(respons);
     socket.Send(send200UserAgent);
 }else
