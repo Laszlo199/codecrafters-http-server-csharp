@@ -8,8 +8,12 @@ Console.WriteLine("Logs from your program will appear here!");
 
 // Uncomment this block to pass the first stage
 TcpListener server = new TcpListener(IPAddress.Any, 4221);
+while(true){
 server.Start();
-var socket = server.AcceptSocket();
+//var socket = server.AcceptSocket();
+
+    var socket = server.AcceptSocket();
+
 
 //Reader
 byte[] data = new byte[1024];
@@ -26,7 +30,6 @@ for(int i = 0; i < requestLines.Length; i++)
 }
 
 //select the data
-
 var uri = allTokens[0][1];
 
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
@@ -54,4 +57,6 @@ else if(uri.Contains("/echo/"))
 }else
 {
     socket.Send(send404);
+}
+socket.Close();
 }
