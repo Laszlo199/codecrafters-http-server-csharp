@@ -1,8 +1,7 @@
-using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Microsoft.VisualBasic;
+
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 Console.WriteLine("Logs from your program will appear here!");
@@ -12,29 +11,37 @@ TcpListener server = new TcpListener(IPAddress.Any, 4221);
 server.Start();
 var socket = server.AcceptSocket();
 
-
-
-
-byte[] data = new byte[1000];
+//Reader
+byte[] data = new byte[1024];
 int receivedData = socket.Receive(data);
 string stringData = Encoding.UTF8.GetString(data, 0, receivedData);
-string[] requestLines = stringData.Split(new[] { "\r\n" }, StringSplitOptions.None);
-string requestLine = requestLines[0];
-string[] requestLineTokens = requestLine.Split(' ');
-string userAgentToken = requestLines[2];
-var uri = requestLineTokens[1];  
+Console.WriteLine("Received data:\n" + stringData);
 
-var message = requestLineTokens[1].Replace("/echo/",string.Empty);
-int lenght = message.Length;
-var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgentToken}"; 
+string[] requestLines = stringData.Split(new[] { "\r\n" }, StringSplitOptions.None);
+string [][] allTokens = new string [requestLines.Length][];
+
+for(int i = 0; i < requestLines.Length; i++)
+{
+    allTokens[i] = requestLines[i].Split(new[]{ ' ' },StringSplitOptions.RemoveEmptyEntries);
+}
+
+//select the data
+string userAgent = allTokens[3][1];
+var uri = allTokens[0][1];
+
+//create the messages and check the uri
+//var message = string.Empty;
+int lenght = userAgent.Length; 
+
+var respons200 = $"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {lenght}\r\n\r\n{userAgent}";
 var send200 = Encoding.UTF8.GetBytes(respons200);
 var send404 = Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n\r\n");
 
-if( uri.Contains("/echo/" ) || uri.Length > 1)
+
+if(uri.Contains("/user-agent") || uri.Length == 1)
 {
     socket.Send(send200);
-}
-else
+}else
 {
     socket.Send(send404);
 }
